@@ -1,18 +1,18 @@
 #!/usr/bin/python3
-"""List all State objects from db 'hbtn_0e_6_usa'
-Script should take 3 args: username, pw, and db name
-Must use SQLAlchemy
-"""
-import sys
-from sqlalchemy.orm import sessionmaker
+""" lists all State objects from the database hbtn_0e_6_usa """
+
+from sys import argv
 from sqlalchemy import create_engine
-from model_state import Base, State
+from model_state import State
+from sqlalchemy.orm import sessionmaker
 
 if __name__ == "__main__":
-    engine = create_engine("mysql+mysqldb://{}:{}@localhost:3306/{}"
-                           .format(sys.argv[1], sys.argv[2], sys.argv[3]))
-    Session = sessionmaker(bind=engine)
-    session = Session()
+    engine = create_engine("mysql+mysqldb://{}:{}@localhost/{}"
+                           .format(argv[1], argv[2], argv[3]),
+                           pool_pre_ping=True)
 
-    for instance in session.query(State):
-        print("{:d}: {}".format(instance.id, instance.name))
+    session_maker = sessionmaker(bind=engine)
+    session = session_maker()
+
+    for state in session.query(State).order_by(State.id):
+        print("{}: {}".format(state.id, state.name))
